@@ -1,0 +1,46 @@
+File name *testmovenon.dat
+T = 5000
+ngpsx = ngpsy = 500
+deltx = delty = 0.5
+diffconst = 0.1;
+deltt = 0.05;
+Non-linear term lambda on in both directions
+No normalization in real time propagation.
+double frequ = 0.5;
+	double secfrequ = 0.1;
+	double alphahat = 5.0;
+	double n = 20.0;
+	double ww = 0.5 * frequ / n;
+	double lambda = 0.5;
+	
+File name *testmovenon2.dat
+Laser on
+T = 10000
+ngpsx = ngpsy = 500
+deltx = delty = 0.5
+diffconst = 0.1;
+deltt = 0.05;
+Non-linear term lambda on in both directions
+No Normalization in real time propagation.
+double frequ = 0.8;
+	double alphahat = 1.5;
+	double n = 60.0;
+	double ww = 0.5 * frequ / n;
+	double lambda = 0.3;
+
+	File name *testmovenon3.dat
+	With interaction spring (x-y)^2
+Laser on
+T = 10000
+ngpsx = ngpsy = 500
+deltx = delty = 0.5
+diffconst = 0.1;
+deltt = 0.05;
+Non-linear term lambda on in both directions
+No Normalization in real time propagation.
+double frequ = 0.8;
+	double alphahat = 1.5;
+	double n = 60.0;
+	double ww = 0.5 * frequ / n;
+	double lambda = 0.3;
+	

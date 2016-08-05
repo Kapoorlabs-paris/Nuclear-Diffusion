@@ -1,0 +1,1 @@
+g++ -O3 Nucdif.cpp density.cpp fluid.cpp grid.cpp hamop.cpp -o ../bin/i386/Nucdif

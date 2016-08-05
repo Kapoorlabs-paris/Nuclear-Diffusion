@@ -1,0 +1,430 @@
+#/********************************************************************************************************************************/
+#/*															         */
+#/*  General Project Makefile Template												 */
+#/*															         */
+#/*  Filename     	: $RCSfile: GNUmakefile.tmpl,v $									 */
+#/*  RCS-Path    	: $Source: /home/lionsoft/projects/RCS/GNUmakefile.tmpl,v $			 			 */
+#/*  Version      	: $Revision: 1.3 $											 */
+#/*  Last changed 	: $Date: 1996/10/21 18:48:32 $										 */
+#/*  Author       	: Werner Bachmann,Uwe Baake										 */
+#/*																 */
+#/********************************************************************************************************************************/
+
+HOSTTYPE        = i386
+ROOT		= $//home/ubuntu/workspace/diff
+OBJS          	= $(ROOT)/obj
+DEPS          	= $(ROOT)/dep
+LIBS          	= $(ROOT)/lib
+BINS          	= $(ROOT)/bin
+VERS          	= $(ROOT)/versions
+SRCDIR          = $(ROOT)
+BINDIR          = $(ROOT)/bin/$(HOSTTYPE)
+OBJDIR          = $(ROOT)/obj/$(HOSTTYPE)
+DEPDIR          = $(ROOT)/dep/$(HOSTTYPE)
+LIBDIR          = $(ROOT)/lib/$(HOSTTYPE)
+
+vpath %.o $(OBJDIR)/$(PROGNAME)
+
+C++FLAGS     	=  #-DMYTEST=" "# -DTEST
+C++GNULIBFLAGS 	=  #-fexternal-templates -DMOTIF -DXMt 
+C++OPTI       	= -O3 -finline-functions -fexpensive-optimizations -ffast-math #-gstabs+ -O 
+C++MYINCL  	=
+
+CFLAGS     	= #-DXMt -DMOTIF
+COPTI       	= -O3 -finline-functions -fexpensive-optimizations -ffast-math #-gstabs+ -O 
+CMYINCL  	=
+
+F77FLAGS      	=
+F77OPTI       	= -O8 -fexpensive-optimizations -ffast-math
+F77SPECIAL  	=
+
+LDFLAGS		= #-pg -gstabs+
+
+CFILES        = $(CBASICS)
+CHEADERS      = $(CBASICS:.c=.h)
+
+C++FILES      = $(CCBASICS) $(C++BASICS) $(ESQLBASICS:.ec=.C)
+C++HEADERS    = $(C++BASICS:.C=.H) $(CCBASICS:.cc=.h) $(ESQLBASICS:.ec=.H)
+GENFILES      = $(CCBASICS) $(CCBASICS:.cc=.h) $(ESQLBASICS:.ec=.C)
+PICPACKAGE    = $(PACKAGE:.a=.so)
+
+
+ifeq ($(HOSTTYPE),i386)
+	ARCHFLAG    = -D_LINUX_ -D__NO_MATH_INLINES
+	F77C	    = f2c
+        XLIBS       = #-lXm -lXt -lXmu -lX11
+	DATALIBS    = -L$(PVM_ROOT)/lib/LINUX #-L/usr/local/Minerva/lib -lmsql
+	DATAINCL    = #-I/usr/local/Minerva/include
+	INCL	    = -I$(ROOT)/src -I$(HOME)/include -I. -I/usr/local/include -I/usr/local/matpack/include #-I$(PVM_ROOT)/include #-I/usr/include/X11 -I/usr/X11/include -I/usr/src/linux/include $(DATAINCL) 
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	OSLDFLAGS   = 
+	OSCFLAGS    = 
+else
+ifeq ($(HOSTTYPE),i686)
+	ARCHFLAG    = -D_LINUX_ -D__NO_MATH_INLINES
+	F77C	    = f2c
+        XLIBS       = #-lXm -lXt -lXmu -lX11
+	DATALIBS    = -L$(PVM_ROOT)/lib/LINUX #-L/usr/local/Minerva/lib -lmsql
+	DATAINCL    = #-I/usr/local/Minerva/include
+	INCL	    = -I$(ROOT)/src -I$(HOME)/include -I. -I/usr/local/include -I$(PVM_ROOT)/include #-I/usr/include/X11 -I/usr/X11/include -I/usr/src/linux/include $(DATAINCL)
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	OSLDFLAGS   = 
+	OSCFLAGS    = 
+else
+ifeq ($(HOSTTYPE),i386-sco)
+	ARCHFLAG    = -DSCO -DMAXPATHLEN=1024 -DUSE_DIRENT
+	ARCHOPTI    = -m486
+	MYLIBS      =
+#        XLIBS       = -lXpm -lXm -lXt -lXaw -lXmu -lXext -lX11 -lPW -lsocket -lmalloc -lintl -lm -lgen# static linking
+        XLIBS       = -lXpm -lXtXm_s -lXaw -lXmu -lXext -lX11_s -lPW -lsocket -lmalloc -lintl -lm # shared linking
+	F77C	    = -lF77 -lI77
+	C++LIBS     =
+	DATALIBS    = -lWb -L$(INFORMIXDIR)/lib/esql -lsql -lgen -los
+	DATAINCL    = -I$(INFORMIXDIR)/incl/esql
+	INCL	    = -I/usr/local/lib/g++-include -I/usr/local/lib/g++-include/Wb -I. -I/usr/local/include -I$(HOME)/include -I$(ROOT)/src $(DATAINCL)
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	OSLDFLAGS   = 
+	OSCFLAGS    = 
+else
+ifeq ($(HOSTTYPE),ose5)
+ifeq ($(GCC_EXEC_PREFIX),/usr/local/gcc-2.8.0/lib/gcc-lib/)
+	ARCHFLAG    = -DSCO -DOSE5 -DMAXPATHLEN=1024 -DUSE_DIRENT -DSEQ 
+	ARCHOPTI    = -m486
+	MYLIBS      = 
+        XLIBS       = -L/usr/local/gcc-2.8.0/lib -L/usr/local/lib -lXpm -lXm -lXt -lXaw -lXmu -lXext -lX11 -lPW -lsocket -lmalloc -lintl /usr/lib/libgen.a -lm
+	F77C	    = -lF77 -lI77
+	C++LIBS     = -L$(PVM_ROOT)/lib/SCO -L$(DAISY_HOME)/libs/SEQ
+	DATALIBS    = -lWb -L$(INFORMIXDIR)/lib/esql -lsql -lgen -los
+	DATAINCL    = -I$(INFORMIXDIR)/incl/esql
+	INCL	    = -I$(ROOT)/src -I/usr/local/gcc-2.8.0/include/g++ -I/usr/local/lib/g++-include/Wb -I. -I/usr/local/include -I$(HOME)/include $(DATAINCL) -I$(DAISY_HOME)/include
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	OSLDFLAGS   = #-b elf 
+	OSCFLAGS    = #-b elf
+	PICFLAGS    = #-b elf -fpic
+	PICSOFLAGS  = #-b elf -G -fpic
+else
+	ARCHFLAG    = -DSCO -DOSE5 -DMAXPATHLEN=1024 -DUSE_DIRENT -DSEQ
+	ARCHOPTI    = -m486
+	MYLIBS      = 
+        XLIBS       = -L/usr/local/lib -lXm -lXt -lXaw -lXmu -lXext -lX11 -lPW -lsocket -lmalloc -lintl /usr/lib/libgen.a -lm
+	F77C	    = -lF77 -lI77
+	C++LIBS     = -L$(PVM_ROOT)/lib/SCO -L$(DAISY_HOME)/libs/SEQ
+	DATALIBS    = -lWb #-L$(INFORMIXDIR)/lib/esql -lsql -lgen -los
+	DATAINCL    = -I$(INFORMIXDIR)/incl/esql
+	INCL	    = -I$(ROOT)/src -I/usr/local/lib/g++-include -I/usr/local/lib/g++-include/Wb -I. -I/usr/local/include -I$(HOME)/include $(DATAINCL) -I$(DAISY_HOME)/include
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	OSLDFLAGS   = -b elf 
+	OSCFLAGS    = -b elf
+	PICFLAGS    = -b elf -fpic
+	PICSOFLAGS  = -b elf -G -fpic
+endif
+else
+ifeq ($(HOSTTYPE),sun4)
+	ARCHFLAG    = -DSUNOS -D__EXTENSIONS__ -DNO_LAB_3D
+        XLIBS       = #-lXm -lXt -lXmu -lXpm -lX11
+	F77C	    = -lF77 -lI77
+	C++XDFILES  = #xdxtclass.cc xdxmdialog.cc
+	DATALIBS    = 
+	DATAINCL    = 
+	INCL	    = -I/usr/include -I/usr/local/include -I/opt/gnu/lib/g++-include/ -I. -I$(HOME)/include -I$(ROOT)/src $(DATAINCL)
+	G++INCLUDES = $(INCL) 
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	C++LIBS     = -L/usr/local/X11R5/lib -L/usr/local/lib -L/opt/gnu/lib/ -L$(PVM_ROOT)/lib/SUN4SOL2
+else
+ifeq ($(HOSTTYPE),sun5)
+	ARCHFLAG    = -DSOLARIS -DXMt
+        XLIBS       = -L/usr/local/X11R5/lib -L/usr/local/lib -L/usr/local/gnu/lib -L/usr/dt/lib -L/usr/openwin/lib -lXm -lXt -lXpm -lXext -lXmu -lX11 -lfl
+	F772C	    =-lf2c
+	DATALIBS    = -L/usr/local/Minerva/lib -lmsql
+	DATAINCL    = -I/usr/local/Minerva/include
+	INCL	    = -I/usr/local/gnu/lib/g++-include -I/usr/local/X11R5/include -I/usr/dt/include -I. -I/usr/local/include -I$(HOME)/include -I$(ROOT)/src -I/usr/openwin/include $(DATAINCL)
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+else
+ifeq ($(HOSTTYPE),hp9000s800)
+	ARCHFLAG    = -D__NO_RANDOM__ -D_HPUX_
+        XLIBS       = -lXm -lXt -lXmu -lXpm -lX11 -nostdlib  -nostdlib -lg++ -lgcc -lc -lgcc -lm
+	F77C	    = f
+	F77FLAGS    = -O +ppu
+	DATALIBS    = -L/usr/local/Minerva/lib -lmsql
+	DATAINCL    = -I/usr/local/Minerva/include
+	C++XDFILES  = xdxtclass.cc xdxmdialog.cc
+	INCL	    = -I/usr/local/lib/g++-include -I/usr/local/X11R5/include -I$(HOME)/include -I$(ROOT)/src $(DATAINCL)
+	G++INCLUDES = $(INCL)
+	C++INCL	    = $(INCL)
+	CINCL       = $(INCL)
+	CMYINCL     = $(INCL)
+	C++LIBS     = -L/usr/local/X11R5/lib -L/usr/local/lib
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+
+C++INCLUDES	= $(C++INCL) $(C++MYINCL)
+CINCLUDES	= $(CINCL) $(CMYINCL)
+PROGNAME	= $(PROG)
+
+ESQL		= esql -G
+C++   		= g++ $(OSCFLAGS) $(C++FLAGS) $(C++OPTI) $(C++SPECIAL) $(ARCHOPTI) $(ARCHFLAG)
+C++GNULIB  	= g++ $(OSCFLAGS) $(C++GNULIBFLAGS) $(C++OPTI) $(C++SPECIAL) $(ARCHOPTI) $(ARCHFLAG)
+CC    		= gcc $(OSCFLAGS) $(CFLAGS) $(COPTI) $(CSPECIAL) $(ARCHFLAG) $(ARCHOPTI) 
+F77		= g77 $(F77FLAGS) $(F77OPTI) $(F77SPECIAL) $(ARCHOPTI)
+
+PICC++ 		= g++ $(PICFLAGS) $(C++FLAGS) $(C++OPTI) $(C++SPECIAL) $(ARCHOPTI) $(ARCHFLAG)
+PICC++GNULIB  	= g++ $(PICFLAGS) $(C++GNULIBFLAGS) $(C++OPTI) $(C++SPECIAL) $(ARCHOPTI) $(ARCHFLAG)
+PICCC  		= gcc $(PICFLAGS) $(CFLAGS) $(COPTI) $(CSPECIAL) $(ARCHFLAG) $(ARCHOPTI)
+PICAR		= g++ $(PICSOFLAGS) $(C++FLAGS) $(C++OPTI) $(C++SPECIAL) $(ARCHOPTI) $(ARCHFLAG) 
+   
+
+ifeq ($(HOSTTYPE),hp9000s800)
+	LD++    = g++ /lib/crt0.o $(LDFLAGS) -L$(LIBDIR) $(C++LIBS) 
+else
+	LD++    = g++ -L$(LIBDIR) $(OSLDFLAGS) $(LDFLAGS) $(C++LIBS) 
+endif
+
+LD	= g++ -L$(LIBDIR) $(LDFLAGS) $(C++LIBS)
+
+CI	= ci -m-"" -t-"" -u
+CO	= co
+LOCK	= rcs -l
+UNLOCK	= rcs -u
+
+LLIBS   = $(MYLIBS) $(DATALIBS) $(F772C) $(XLIBS) $(C++LIBS)
+
+%.C : %.ec
+	$(ESQL) -e $*.ec
+	-mv -f $*.c $*.C
+
+$(OBJDIR)/$(PROGNAME)/%.o : %.C   				# How to Compile C++ Files (.C)
+	$(C++) $(G++INCLUDES) $(C++INCLUDES) -c $< -o $@
+
+$(OBJDIR)/$(PROGNAME)/%.o : %.cc   				# How to Compile C++ Files (.cc)
+	$(C++) $(G++INCLUDES) $(C++INCLUDES) -c $< -o $@
+
+$(OBJDIR)/$(PROGNAME)/%.o : %.cc   				# How to Compile C++ Files (.cc)
+	$(C++GNULIB) $(G++INCLUDES) $(C++INCLUDES) -c $< -o $@
+
+$(OBJDIR)/$(PROGNAME)/%.o : %.c   				# How to Compile C Files (.c)
+	$(CC) $(CINCLUDES) -c $< -o $@
+
+
+
+
+$(PICDIR)/$(PROGNAME)/%.o : %.C   				# How to Compile C++ Files (.C)
+	$(PICC++) $(G++INCLUDES) $(C++INCLUDES) -c $< -o $@
+
+$(PICDIR)/$(PROGNAME)/%.o : %.cc   				# How to Compile C++ Files (.cc)
+	$(PICC++) $(G++INCLUDES) $(C++INCLUDES) -c $< -o $@
+
+$(PICDIR)/$(PROGNAME)/%.o : %.cc   				# How to Compile C++ Files (.cc)
+	$(PICC++GNULIB) $(G++INCLUDES) $(C++INCLUDES) -c $< -o $@
+
+$(PICDIR)/$(PROGNAME)/%.o : %.c   				# How to Compile C Files (.c)
+	$(PICCC) $(CINCLUDES) -c $< -o $@
+
+
+
+ifeq ($(HOSTTYPE),ose5)
+$(BINDIR)/%:$(OBJDIR)/$(PROGNAME)/%.o $(PACKAGE) $(LOCALLIBS)
+	-mv -f $@ $@.old
+	$(LD++) -o $@ $< $(LLIBS) 2>&1| gc++filt
+else
+$(BINDIR)/%:$(OBJDIR)/$(PROGNAME)/%.o $(PACKAGE) $(LOCALLIBS)
+	-mv -f $@ $@.old
+	$(LD++) -o $@ $< $(LLIBS)
+endif
+
+ifeq ($(HOSTTYPE),i386) # rules for f2c
+$(OBJDIR)/$(PROGNAME)/%.o : %.f   # How to Compile FORTRAN-77 Files (.f)
+	$(F77) $(F77INCLUDES) -c $<; mv -f $(notdir $@) $@
+endif
+ifeq ($(HOSTTYPE),i686) # rules for f2c
+$(OBJDIR)/$(PROGNAME)/%.o : %.f   # How to Compile FORTRAN-77 Files (.f)
+	$(F77) $(F77INCLUDES) -c $<; mv -f $(notdir $@) $@
+endif
+ifeq ($(HOSTTYPE),i386-sco) # rules for f2c
+$(OBJDIR)/$(PROGNAME)/%.o : %.f   # How to Compile FORTRAN-77 Files (.f)
+	$(F77) $(F77INCLUDES) -c $< -o $@
+else			      # ruleds for standard f77 compiler
+$(OBJDIR)/$(PROGNAME)/%.o : %.f   # How to Compile FORTRAN-77 Files (.f)
+	$(F77) $(F77INCLUDES) -c $< -o $@
+endif
+
+CMODULES    	= $(addsuffix .o, $(addprefix $(OBJDIR)/$(PROGNAME)/, $(basename $(CFILES))))
+C++MODULES    	= $(addsuffix .o, $(addprefix $(OBJDIR)/$(PROGNAME)/, $(basename $(C++FILES))))
+GENMODULES    	= $(addsuffix .o, $(addprefix $(OBJDIR)/$(PROGNAME)/, $(basename $(GENFILES))))
+F77MODULES    	= $(addsuffix .o, $(addprefix $(OBJDIR)/$(PROGNAME)/, $(basename $(F77FILES))))
+PROGMODULES    	= $(addsuffix .o, $(addprefix $(OBJDIR)/$(PROGNAME)/, $(basename $(PROGBASICS))))
+
+PICCMODULES    	= $(addsuffix .o, $(addprefix $(PICDIR)/$(PROGNAME)/, $(basename $(CFILES))))
+PICC++MODULES  	= $(addsuffix .o, $(addprefix $(PICDIR)/$(PROGNAME)/, $(basename $(C++FILES))))
+PICGENMODULES  	= $(addsuffix .o, $(addprefix $(PICDIR)/$(PROGNAME)/, $(basename $(GENFILES))))
+PICF77MODULES  	= $(addsuffix .o, $(addprefix $(PICDIR)/$(PROGNAME)/, $(basename $(F77FILES))))
+   
+PROGRAMS	= $(addprefix $(BINDIR)/, $(basename $(PROGBASICS)))
+
+
+OBJECTS    	= $(addsuffix .o, $(basename $(CFILES)))	\
+		  $(addsuffix .o, $(basename $(C++FILES)))	\
+		  $(addsuffix .o, $(basename $(F77FILES)))
+
+MODULES 	= $(CMODULES) $(C++MODULES) $(GENMODULES) $(F77MODULES) $(PROGMODULES)
+PICMODULES 	= $(PICCMODULES) $(PICC++MODULES) $(PICGENMODULES) $(PICF77MODULES)
+
+C++DEPENDFILE	= $(addsuffix .d,$(PROGNAME))
+
+all: $(GENFILES) $(LIBDIR)/$(PROG).timestamp $(MODULES) $(PROGRAMS)
+
+pic: $(GENFILES) $(LIBDIR)/$(PROG).so.timestamp $(PICMODULES) $(PROGRAMS)
+
+$(LIBDIR)/$(PROG).timestamp: $(addprefix $(OBJDIR)/$(PROGNAME)/, $(OBJECTS))
+	cd $(OBJDIR)/$(PROGNAME);               						\
+	if ( ar ruvs $(PACKAGE) $(OBJECTS) ); then 						\
+	touch $(LIBDIR)/$(PROG).timestamp;						 	\
+	fi
+
+$(LIBDIR)/$(PROG).so.timestamp: $(addprefix $(PICDIR)/$(PROGNAME)/, $(OBJECTS))
+	cd $(PICDIR)/$(PROGNAME);               						\
+	echo $(PICMODULES) > $(ROOT)/$(PROG).shared;							\
+	touch $(LIBDIR)/$(PROG).so.timestamp;
+
+ifeq ($(findstring $(C++DEPENDFILE),$(notdir $(wildcard $(DEPDIR)/*.d))),$(C++DEPENDFILE))
+include $(DEPDIR)/$(C++DEPENDFILE)
+endif
+
+
+project:
+	cd $(ROOT); make all
+
+installdirs:
+	@if [ -d  $(VERS) ] ; then\
+	  echo "Directory " $(VERS) " exists !";\
+	else\
+	  mkdir -p $(VERS);\
+	fi
+	@if [ -d  $(OBJS) ] ; then\
+	  echo "Directory " $(OBJS) " exists !";\
+	else\
+	  mkdir -p $(OBJS);\
+	fi
+	@if [ -d  $(OBJDIR) ] ; then\
+	  echo "Directory " $(OBJDIR) " exists !" ;\
+	else\
+	  echo $(USER) " mkdir " $(OBJS) " !";\
+	  cd $(OBJS); mkdir -p $(HOSTTYPE);\
+	fi
+	@if [ -d  $(BINS) ] ; then\
+	  echo "Directory " $(BINS) " exists !";\
+	else\
+	  cd $(ROOT); mkdir -p bin;\
+	fi
+	@if [ -d  $(BINDIR) ] ; then\
+	  echo "Directory " $(BINDIR) " exists !" ;\
+	else\
+	  cd $(BINS); mkdir -p $(HOSTTYPE);\
+	fi
+	@if [ -d  $(LIBS) ] ; then\
+	  echo "Directory " $(LIBS) " exists !" ;\
+	else\
+	  cd $(ROOT); mkdir -p lib;\
+	fi
+	@if [ -d  $(LIBDIR) ] ; then\
+	  echo "Directory " $(LIBDIR) " exists !" ;\
+	else\
+	  cd $(LIBS); mkdir -p $(HOSTTYPE);\
+	fi
+	@if [ -d  $(DEPS) ] ; then\
+	  echo "Directory " $(DEPS) " exists !" ;\
+	else\
+	  cd $(ROOT); mkdir -p dep;\
+	fi
+	@if [ -d  $(DEPDIR) ] ; then\
+	  echo "Directory " $(DEPDIR) " exists !" ;\
+	else\
+	  cd $(DEPS); mkdir -p $(HOSTTYPE);\
+	fi
+	@if [ -d  $(OBJDIR)/$(PROGNAME) ] ; then\
+	  echo "Directory " $(OBJDIR)"/"$(PROGNAME) " exists !" ;\
+	else\
+	  cd $(OBJDIR); mkdir -p $(PROGNAME);\
+	fi
+	@if [ -d  $(VERS)/$(PROGNAME) ] ; then\
+	  echo "Directory " $(VERS)"/"$(PROGNAME) " exists !" ;\
+	else\
+	  cd $(VERS); mkdir -p $(PROGNAME);\
+	fi
+	@if [ -d  $(VERS)/$(PROGNAME)/RCS ] ; then\
+	  echo "Directory " $(VERS)"/"$(PROGNAME)"/RCS exists !" ;\
+	else\
+	  cd $(VERS); mkdir -p $(PROGNAME)/RCS;\
+	fi
+	@if [ -d  $(SRCDIR)/$(PROGNAME)/RCS ] ; then\
+	  echo "Directory " $(SRCDIR)"/"$(PROGNAME)"/RCS exists !" ;\
+	else\
+	  cd $(SRCDIR)/$(PROGNAME); rm -f RCS;ln -s ../../versions/$(PROGNAME)/RCS .;\
+	fi
+
+$(DEPDIR)/$(C++DEPENDFILE):
+	touch $(DEPDIR)/$(C++DEPENDFILE)
+
+depend:
+	touch $(DEPDIR)/$(C++DEPENDFILE)
+	makedepend -p$(OBJDIR)/$(PROGNAME)/ -f $(DEPDIR)/$(C++DEPENDFILE) $(ARCHFLAG) $(C++INCLUDES) $(G++INCLUDE) $(ESQLBASICS) $(C++BASICS) $(CCBASICS) $(CBASICS) $(EXTRADEPS)
+
+
+
+clean:
+	-rm -f core
+	-rm -f *~
+	-rm -f #*
+	-rm -f *.o
+	-rm -f $(CMODULES)
+	-rm -f $(C++MODULES)
+	-rm -f $(GENMODULES)
+	-rm -f $(F77MODULES)
+	-rm -f $(PROGMODULES)
+
+
+realclean:
+	gmake clean
+	-rm -f $(GENFILES)
+	-rm -f $(subst .ec,.C,$(wildcard *.ec))
+
+
+
+ci:$(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES)
+	$(CI) $(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES) GNUmakefile
+
+co:
+	$(CO) $(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES) GNUmakefile
+
+lock:$(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES)
+	$(LOCK) $(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES) GNUmakefile
+
+unlock:$(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES)
+	$(UNLOCK) $(CFILES) $(CHEADERS) $(C++FILES) $(C++HEADERS) $(GENFILES) GNUmakefile
+
+
+
